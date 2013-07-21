@@ -1,4 +1,8 @@
 geomorph
 ========
 
-Creating maps out of geomorphs.
+Create maps out of geomorphs.
+
+cube
+----
+HTML/Javascript rotating cube of geomophs.

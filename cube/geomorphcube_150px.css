@@ -1,0 +1,54 @@
+#map {margin:1em;position:relative;}
+.geomorph {border:0;padding:0;margin:0;width:150px;height:150px;}
+#geocube1a {position:absolute;left:300px;}
+#geocube1b {position:absolute;left:450px;}
+#geocube1c {position:absolute;left:300px;top:150px;}
+#geocube1d {position:absolute;left:450px;top:150px;}
+
+#geocube4a {position:absolute;           top:300px;}
+#geocube4b {position:absolute;left:150px;top:300px}
+#geocube4c {position:absolute;          ;top:450px;}
+#geocube4d {position:absolute;left:150px;top:450px;}
+
+#geocube2a {position:absolute;left:300px;top:300px}
+#geocube2b {position:absolute;left:450px;top:300px}
+#geocube2c {position:absolute;left:300px;top:450px;}
+#geocube2d {position:absolute;left:450px;top:450px;}
+
+#geocube3a {position:absolute;left:600px;top:300px}
+#geocube3b {position:absolute;left:750px;top:300px}
+#geocube3c {position:absolute;left:600px;top:450px;}
+#geocube3d {position:absolute;left:750px;top:450px;}
+
+#geocube6a {position:absolute;left:300px;top:600px}
+#geocube6b {position:absolute;left:450px;top:600px}
+#geocube6c {position:absolute;left:300px;top:750px;}
+#geocube6d {position:absolute;left:450px;top:750px;}
+
+#geocube5a {position:absolute;left:300px;top:900px}
+#geocube5b {position:absolute;left:450px;top:900px}
+#geocube5c {position:absolute;left:300px;top:1050px;}
+#geocube5d {position:absolute;left:450px;top:1050px;}
+.rot0 {
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  rotation: 0deg;
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
+}
+.rot90 {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  rotation: 90deg;
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+}
+.rot180 {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  rotation: 180deg;
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+}
+.rot270 {
+  -webkit-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}

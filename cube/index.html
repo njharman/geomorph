@@ -1,0 +1,131 @@
+<!doctype html><html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link href="geomorphcube_150px.css" rel="stylesheet" type="text/css">
+  <script src="jquery-1.4.2.min.js" type="text/javascript"></script>
+</head>
+<body>
+  <p>Inspired by <a href="http://postapocapost.blogspot.com/2010/03/roobiks-geomorphing-dungeon.html">this blog</a>, and <a href="http://en.wikipedia.org/wiki/Cube_%28film%29">this movie</a>.</p>
+  <p>Geomorph made by <a href="http://www.risusmonkey.com/search/label/Geomorphs?updated-max=2010-02-27T22%3A39%3A00-05%3A00&max-results=20">Risus Monkey</a>.  More Geomorph maps and original geomorph size/format by <a href="http://rpgcharacters.wordpress.com">Dyson</a>.</p>
+  <p>Code by <a href="http://trollandflame.blogspot.com">njharman</a>. Proof of concept still lacking some incorrect rotations(lack of) for col1 and col2. Fixes and nicer interface maybe to follow.  But, I think I'd rather just build a real world model of a 3x3 cube. <a href="./geomorphcube.zip">Download zip of code and files.</a></p>
+  <p> Imagine the cross below folded up into a cube. Further imagine it as a 2x2 Rubik's Cube with 6 "columns" of rotation.  1-4 being first four columns left to right. 5-6 being horizonal, the two rows across the beam. Being a Rubik's Cube those columns can be rotated up or down (which shifts/rotates various other tiles/faces/sides of the cube.  If you grasped all that, awesome! Now imagine an evil inteligence has placed a party of characters into this dungeon cube and laughs manically whenever (s)he rotates the cube shifting the exit the party was about to reach.  That evil inteligence is you, DM.</p>
+  <hr />
+  <input id="col_1f" type=button value="col 1 up    ">
+  <input id="col_2f" type=button value="col 2 up    ">
+  <input id="col_3f" type=button value="col 3 up    ">
+  <input id="col_4f" type=button value="col 4 up    ">
+  <input id="col_5f" type=button value="col 5 right">
+  <input id="col_6f" type=button value="col 6 right"><br />
+  <input id="col_1b" type=button value="col 1 down">
+  <input id="col_2b" type=button value="col 2 down">
+  <input id="col_3b" type=button value="col 3 down">
+  <input id="col_4b" type=button value="col 4 down">
+  <input id="col_5b" type=button value="col 5 left">
+  <input id="col_6b" type=button value="col 6 left">
+  <div id="map">
+      <img class="geomorph" id="geocube1a" src="img/1.jpg" />
+      <img class="geomorph" id="geocube1b" src="img/2.jpg" />
+      <img class="geomorph" id="geocube1c" src="img/3.jpg" />
+      <img class="geomorph" id="geocube1d" src="img/4.jpg" />
+      <img class="geomorph" id="geocube2a" src="img/5.jpg" />
+      <img class="geomorph" id="geocube2b" src="img/6.jpg" />
+      <img class="geomorph" id="geocube2c" src="img/7.jpg" />
+      <img class="geomorph" id="geocube2d" src="img/8.jpg" />
+      <img class="geomorph" id="geocube3a" src="img/9.jpg" />
+      <img class="geomorph" id="geocube3b" src="img/10.jpg" />
+      <img class="geomorph" id="geocube3c" src="img/11.jpg" />
+      <img class="geomorph" id="geocube3d" src="img/12.jpg" />
+      <img class="geomorph" id="geocube4a" src="img/13.jpg" />
+      <img class="geomorph" id="geocube4b" src="img/14.jpg" />
+      <img class="geomorph" id="geocube4c" src="img/15.jpg" />
+      <img class="geomorph" id="geocube4d" src="img/16.jpg" />
+      <img class="geomorph" id="geocube5a" src="img/17.jpg" />
+      <img class="geomorph" id="geocube5b" src="img/18.jpg" />
+      <img class="geomorph" id="geocube5c" src="img/19.jpg" />
+      <img class="geomorph" id="geocube5d" src="img/20.jpg" />
+      <img class="geomorph" id="geocube6a" src="img/21.jpg" />
+      <img class="geomorph" id="geocube6b" src="img/22.jpg" />
+      <img class="geomorph" id="geocube6c" src="img/23.jpg" />
+      <img class="geomorph" id="geocube6d" src="img/24.jpg" />
+  </div>
+
+<script type="text/javascript">
+/* Geomorphs made by Risus Monkey, http://www.risusmonkey.com/
+   Geomorph map style (and more geomorphs) by Dyson, http://rpgcharacters.wordpress.com
+   Code (released into the public domain) by njharman, http://www.trollandflame.blogspot.com/
+*/
+
+$(document).ready( function() {
+  function draw(p,c,reverse,f,rotation) {
+    //path, cube, reverse path/cube, face to rotate, direction of rotation true = clockwise
+
+    // rotate face
+    var imgrot;
+    var imgrot_delta = -90;
+    var r = [f+'a', f+'b', f+'d', f+'c'];
+    if (rotation) {
+      r.reverse();
+      var imgrot_delta = 90;
+    }
+    var tail = $('#geocube'+r[0]).attr('src');
+    for (var i=0;i<3;i++){
+      $('#geocube'+r[i]).attr('src', $('#geocube'+r[i+1]).attr('src'));
+    }
+    $('#geocube'+r[3]).attr('src', tail);
+    for (var i=0;i<4;i++){
+      imgrot = $('#geocube'+r[i]).data('imgrot');
+      if (!imgrot) { imgrot = 0; }
+      imgrot += imgrot_delta;
+      if (imgrot < 0) {imgrot += 360;}
+      if (imgrot > 360) {imgrot -= 360;}
+      $('#geocube'+r[i]).data('imgrot', imgrot);
+      $('#geocube'+r[i]).attr('class', 'geomorph rot' + imgrot);
+    }
+
+    // shift path
+    if (reverse) {
+      p = p.slice();
+      p.reverse();
+      c = c.slice();
+      c.reverse();
+    }
+    var tail1 = $('#geocube'+p[0]+c[0]).attr('src');
+    var tail2 = $('#geocube'+p[1]+c[1]).attr('src');
+    for (var i=0;i<6;i++) {
+      //console.log( '#geocube'+p[i]+c[i]+'#geocube'+p[i+2]+c[i+2] );
+      $('#geocube'+p[i]+c[i]).attr('src', $('#geocube'+p[i+2]+c[i+2]).attr('src'));
+    }
+    $('#geocube'+p[6]+c[6]).attr('src', tail1);
+    $('#geocube'+p[7]+c[7]).attr('src', tail2);
+  };
+
+  /* Face layout 1   Geomorph layout
+                423      ab
+                 6       cd
+                 5                    */
+
+  var p1463 = ['1','1','4','4','6','6','3','3'];
+  var p1265 = ['1','1','2','2','6','6','5','5'];
+  var p5423 = ['5','5','4','4','2','2','3','3'];
+  var col_1 = ['b','a','a','c','c','d','d','b'];
+  var col_2 = ['d','c','b','d','a','b','c','a'];
+  var col_3 = ['a','c','a','c','a','c','a','c'];
+  var col_4 = ['b','d','b','d','b','d','b','d'];
+  var col_5 = ['d','c','a','b','a','b','a','b'];
+  var col_6 = ['b','a','c','d','c','d','c','d'];
+  $('#col_1f').click( function() { draw(p1463, col_1, 0, '5', 0); });
+  $('#col_1b').click( function() { draw(p1463, col_1, 1, '5', 1); });
+  $('#col_2f').click( function() { draw(p1463, col_2, 0, '2', 1); });
+  $('#col_2b').click( function() { draw(p1463, col_2, 1, '2', 0); });
+  $('#col_3f').click( function() { draw(p1265, col_3, 0, '4', 0); });
+  $('#col_3b').click( function() { draw(p1265, col_3, 1, '4', 1); });
+  $('#col_4f').click( function() { draw(p1265, col_4, 0, '3', 1); });
+  $('#col_4b').click( function() { draw(p1265, col_4, 1, '3', 0); });
+  $('#col_5f').click( function() { draw(p5423, col_5, 1, '1', 0); });
+  $('#col_5b').click( function() { draw(p5423, col_5, 0, '1', 1); });
+  $('#col_6f').click( function() { draw(p5423, col_6, 1, '6', 1); });
+  $('#col_6b').click( function() { draw(p5423, col_6, 0, '6', 0); });
+  });
+</script>
+</body>
+</html
