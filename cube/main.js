@@ -48,9 +48,11 @@ let past = [];
 let future = [];
 
 function persist() {
-  const p = new URLSearchParams({ s: encode(state) });
+  // The starting map and flat view are the plain URL, with no hash.
+  const p = new URLSearchParams();
+  if (encode(state) !== encode(newCube())) p.set('s', encode(state));
   if (view === '3d') p.set('view', '3d');
-  history.replaceState(null, '', `#${p}`);
+  history.replaceState(null, '', p.size ? `#${p}` : location.pathname + location.search);
   store.set('s', encode(state));
 }
 
