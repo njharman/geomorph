@@ -35,4 +35,5 @@ Needs Node 20+ for the tests; the site itself has no dependencies.
 License
 -------
 Code is public domain ([Unlicense](LICENSE)). The geomorph tile images in
-`cube/img/` are by Risus Monkey and are not covered by that license.
+`cube/img/` are by Tim Ballew (Risus Monkey) and are not covered by that license.
+The geomorph format originated with Dyson Logos (https://dysonlogos.blog).

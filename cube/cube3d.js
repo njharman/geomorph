@@ -1,6 +1,7 @@
 // 3D view: the same state folded into a cube with CSS 3D transforms.
 // Each face is a 2x2 grid of tiles; drag to orbit.
 import { POSITIONS } from './cube.js';
+import { DEFAULT_SET, tileSrc } from './sets.js';
 
 // Placing each face of the net on the folded cube (net-up of face 1 points
 // away from the viewer, face 2 is the front). See FACES in test/oracle.js.
@@ -56,12 +57,15 @@ export function createCube3d(scene) {
   scene.addEventListener('pointerup', end);
   scene.addEventListener('pointercancel', end);
 
+  let set = DEFAULT_SET;
+
   return {
+    setTiles(next) { set = next; },
     render(state) {
       for (const pos of POSITIONS) {
         const { tile, rot } = state[pos];
         const img = images[pos];
-        img.src = `img/${tile}.webp`;
+        img.src = tileSrc(set, tile);
         img.alt = `Geomorph tile ${tile}`;
         img.style.rotate = `${rot % 360}deg`;
       }

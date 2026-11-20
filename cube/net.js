@@ -1,6 +1,7 @@
 // Flat view: the unfolded cross, one <img> per tile (keyed by tile number, so a
 // move can animate a tile travelling to its new position).
 import { POSITIONS } from './cube.js';
+import { DEFAULT_SET, tileSrc } from './sets.js';
 
 // Top-left cell (column, row; in tile units) of each face in the net.
 export const FACE_ORIGIN = { 1: [2, 0], 4: [0, 2], 2: [2, 2], 3: [4, 2], 6: [2, 4], 5: [2, 6] };
@@ -36,7 +37,7 @@ export function createNet(container, arrowButtons) {
   for (let tile = 1; tile <= 24; tile++) {
     const img = document.createElement('img');
     img.className = 'geomorph';
-    img.src = `img/${tile}.webp`;
+    img.src = tileSrc(DEFAULT_SET, tile);
     img.alt = `Geomorph tile ${tile}`;
     img.width = img.height = 300;
     img.decoding = 'async';
@@ -106,6 +107,11 @@ export function createNet(container, arrowButtons) {
         }
       }
       for (const pos of POSITIONS) turn.set(state[pos].tile, state[pos].rot);
+    },
+
+    /** Switch every tile image to another set. */
+    setTiles(set) {
+      for (const [tile, img] of images) img.src = tileSrc(set, tile);
     },
 
     /** Outline the tiles currently at these positions (null clears). */
