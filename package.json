@@ -3,7 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test test/*.test.js",
-    "serve": "python -m http.server -d cube"
+    "test": "node --test test/*.test.js"
   }
 }

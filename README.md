@@ -29,8 +29,8 @@ Development
 -----------
 Needs Node 20+ for the tests; the site itself has no dependencies.
 
-    npm test         # run tests
-    npm run serve    # preview at http://localhost:8000 (needs python)
+    just test        # run tests (same as npm test)
+    just serve       # preview at http://localhost:8000 (needs python)
 
 License
 -------
