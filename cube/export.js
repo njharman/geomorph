@@ -1,7 +1,7 @@
 // Draws the flat map (6x8 tiles) onto a canvas and offers it as a PNG download.
 import { POSITIONS } from './cube.js';
 import { FACE_ORIGIN } from './net.js';
-import { DEFAULT_SET, tileSrc } from './sets.js';
+import { DEFAULT_DECK, deckSrc } from './sets.js';
 
 const TILE = 240;
 const MARGIN = 40;
@@ -15,7 +15,7 @@ const load = (src) =>
     img.src = src;
   });
 
-export async function renderPng(state, set = DEFAULT_SET) {
+export async function renderPng(state, deck = DEFAULT_DECK) {
   const canvas = document.createElement('canvas');
   canvas.width = 6 * TILE + 2 * MARGIN;
   canvas.height = 8 * TILE + 2 * MARGIN;
@@ -24,7 +24,7 @@ export async function renderPng(state, set = DEFAULT_SET) {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.imageSmoothingQuality = 'high';
 
-  const imgs = await Promise.all(POSITIONS.map((p) => load(tileSrc(set, state[p].tile))));
+  const imgs = await Promise.all(POSITIONS.map((p) => load(deckSrc(deck, state[p].tile))));
   POSITIONS.forEach((pos, i) => {
     const [x0, y0] = FACE_ORIGIN[pos[0]];
     const [dx, dy] = SUB[pos[1]];
@@ -43,8 +43,8 @@ export async function renderPng(state, set = DEFAULT_SET) {
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
 }
 
-export async function savePng(state, set = DEFAULT_SET) {
-  const blob = await renderPng(state, set);
+export async function savePng(state, deck = DEFAULT_DECK) {
+  const blob = await renderPng(state, deck);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'geomorph-cube.png';

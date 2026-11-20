@@ -1,7 +1,22 @@
 // Flat view: the unfolded cross, one <img> per tile (keyed by tile number, so a
 // move can animate a tile travelling to its new position).
 import { POSITIONS } from './cube.js';
-import { DEFAULT_SET, tileSrc } from './sets.js';
+import { DEFAULT_DECK, deckSrc } from './sets.js';
+
+// Transparent 1x1 GIF: a blank tile without the browser's broken-image icon.
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+/** Point a tile's <img> at its deck image, or blank it when there is no deck. */
+export function showTile(img, deck, tile) {
+  img.classList.toggle('blank', !deck);
+  if (deck) {
+    img.src = deckSrc(deck, tile);
+    img.alt = `Geomorph tile ${tile}`;
+  } else {
+    img.src = BLANK;
+    img.alt = '';
+  }
+}
 
 // Top-left cell (column, row; in tile units) of each face in the net.
 export const FACE_ORIGIN = { 1: [2, 0], 4: [0, 2], 2: [2, 2], 3: [4, 2], 6: [2, 4], 5: [2, 6] };
@@ -37,8 +52,7 @@ export function createNet(container, arrowButtons) {
   for (let tile = 1; tile <= 24; tile++) {
     const img = document.createElement('img');
     img.className = 'geomorph';
-    img.src = tileSrc(DEFAULT_SET, tile);
-    img.alt = `Geomorph tile ${tile}`;
+    showTile(img, DEFAULT_DECK, tile);
     img.width = img.height = 300;
     img.decoding = 'async';
     img.draggable = false;
@@ -109,9 +123,9 @@ export function createNet(container, arrowButtons) {
       for (const pos of POSITIONS) turn.set(state[pos].tile, state[pos].rot);
     },
 
-    /** Switch every tile image to another set. */
-    setTiles(set) {
-      for (const [tile, img] of images) img.src = tileSrc(set, tile);
+    /** Show another deck's images; null blanks every tile. */
+    setTiles(deck) {
+      for (const [tile, img] of images) showTile(img, deck, tile);
     },
 
     /** Outline the tiles currently at these positions (null clears). */

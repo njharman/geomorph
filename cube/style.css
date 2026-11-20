@@ -11,7 +11,7 @@
 
   /* Tile size: fit the width (6 tiles + 2 gutters) and the height (8 tiles + 2 gutters). */
   --gutter: clamp(1.5rem, calc(var(--tile) * 0.42), 2.6rem);
-  --tile: clamp(40px, min(calc((100vw - 2rem - 2 * 2.6rem) / 6), calc((100dvh - 19rem) / 8)), 150px);
+  --tile: clamp(40px, min(calc((100vw - 2rem - 2 * 2.6rem) / 6), calc((100dvh - 23rem) / 8)), 150px);
   --t: calc(var(--tile) * 0.85);
   color-scheme: light dark;
 }
@@ -84,6 +84,22 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 .toolbar { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-bottom: 0.25rem; }
 .sep { width: 1px; align-self: stretch; margin-inline: 0.3rem; background: var(--line); }
+.picker {
+  max-width: 60rem; margin: 0.4rem auto 0;
+  display: flex; flex-wrap: wrap; gap: 0.25rem 0.8rem; align-items: center;
+}
+.picker-label, .set-group { color: var(--muted); }
+.set-group { white-space: nowrap; }
+.set-group label { color: var(--ink); }
+/* Checkboxes, Deal and the hint all flow in one wrapping row. */
+.sets { display: contents; }
+.sets label { white-space: nowrap; cursor: pointer; }
+.sets input { accent-color: var(--accent); }
+/* Both labels share one cell so the button keeps the width of the longer one. */
+.deal { display: inline-grid; }
+.deal > span { grid-area: 1 / 1; }
+.deal:disabled .on, .deal:not(:disabled) .off { visibility: hidden; }
+.hint { margin: 0; color: var(--muted); font-size: 0.9rem; flex-basis: 100%; }
 .status { min-height: 1.6em; margin-block: 0.25rem 0.5rem; color: var(--muted); font-size: 0.9rem; }
 
 /* ---- flat map ---- */
@@ -109,6 +125,7 @@ main { display: flex; justify-content: center; }
   outline-offset: -1px;
   user-select: none;
 }
+.geomorph.blank { background: repeating-linear-gradient(45deg, #fff 0 8px, #f1ece0 8px 16px); }
 .geomorph.hl { outline: 4px solid var(--accent); outline-offset: -4px; position: relative; z-index: 1; }
 
 /* Face borders and (optional) face numbers sit above the tiles but never catch the pointer. */
@@ -172,7 +189,7 @@ main { display: flex; justify-content: center; }
 @media print {
   :root { --tile: 1.2in; --gutter: 0; }
   body { background: #fff; padding: 0; }
-  .page-head, .toolbar, .status, .page-foot, .cube-view, .arrow, noscript { display: none !important; }
+  .page-head, .toolbar, .picker, .status, .page-foot, .cube-view, .arrow, noscript { display: none !important; }
   .net, .net[hidden] { display: grid !important; box-shadow: none; background: #fff; margin-inline: auto; }
   .geomorph.hl { outline: 1px solid rgb(0 0 0 / 22%); outline-offset: -1px; }
   .show-faces .face::after { display: none; }

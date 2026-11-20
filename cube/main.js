@@ -2,7 +2,10 @@ import { MOVES, affected, applyMove, decode, encode, newCube, scramble } from '.
 import { createNet } from './net.js';
 import { createCube3d } from './cube3d.js';
 import { savePng } from './export.js';
-import { SETS, findSet } from './sets.js';
+import {
+  DEFAULT_DECK, DEFAULT_SELECTION, SETS, TILES, cleanSelection, deal, deckCredits, decodeDeck, encodeDeck,
+  isDefaultDeck, pool,
+} from './sets.js';
 
 const $ = (id) => document.getElementById(id);
 const HISTORY_LIMIT = 200;
@@ -43,7 +46,13 @@ const store = {
 const params = new URLSearchParams(location.hash.slice(1));
 
 let state = decode(params.get('s')) ?? decode(store.get('s')) ?? newCube();
-let tileset = findSet(params.get('t') ?? store.get('t'));
+// The deck says which image each of the 24 tiles shows; null means too few
+// sets are selected and the tiles are blank.
+const storedDeck = store.get('d');
+let deck = decodeDeck(params.get('d')) ?? (storedDeck === '' ? null : decodeDeck(storedDeck) ?? DEFAULT_DECK);
+const storedSets = store.get('sets');
+let selected = storedSets === null ? DEFAULT_SELECTION : cleanSelection(storedSets.split(','));
+if (params.has('d') && deck) selected = setsIn(deck);
 let view = (params.get('view') ?? store.get('view')) === '3d' ? '3d' : 'flat';
 let faces = store.get('faces') === '1';
 let past = [];
@@ -54,10 +63,11 @@ function persist() {
   const p = new URLSearchParams();
   if (encode(state) !== encode(newCube())) p.set('s', encode(state));
   if (view === '3d') p.set('view', '3d');
-  if (tileset !== SETS[0]) p.set('t', tileset.id);
+  if (deck && !isDefaultDeck(deck)) p.set('d', encodeDeck(deck));
   history.replaceState(null, '', p.size ? `#${p}` : location.pathname + location.search);
   store.set('s', encode(state));
-  store.set('t', tileset.id);
+  store.set('d', deck ? encodeDeck(deck) : '');
+  store.set('sets', selected.join(','));
 }
 
 function draw(animate) {
@@ -94,14 +104,34 @@ function setView(next) {
   persist();
 }
 
-function setTileset(next, { save = true } = {}) {
-  tileset = next;
-  net.setTiles(next);
-  cube3d.setTiles(next);
+function setsIn(d) {
+  return SETS.filter((s) => d.some((ref) => ref.set === s)).map((s) => s.id);
+}
+
+function setDeck(next, { save = true } = {}) {
+  deck = next;
+  net.setTiles(deck);
+  cube3d.setTiles(deck);
   cube3d.render(state);
-  $('tile-credit').innerHTML = next.credit;
-  $('tileset').value = next.id;
+  $('tile-credit').innerHTML = deckCredits(deck);
+  $('png').disabled = $('print').disabled = !deck;
   if (save) persist();
+}
+
+/** Sync the checkboxes, Deal button and hint with the selection. */
+function showPicker() {
+  for (const box of $('sets').querySelectorAll('input')) box.checked = selected.includes(box.value);
+  const have = pool(selected).length;
+  $('deal').disabled = have < TILES;
+  $('pick-hint').textContent = have < TILES
+    ? `Select more sets: ${have} of ${TILES} tiles.`
+    : `Pick geomorph sets, then Deal for a random ${TILES}.`;
+}
+
+function select(ids) {
+  selected = cleanSelection(ids);
+  showPicker();
+  setDeck(deal(selected));
 }
 
 function setFaces(on) {
@@ -143,8 +173,9 @@ $('scramble').addEventListener('click', shuffle);
 $('view').addEventListener('click', () => setView(view === '3d' ? 'flat' : '3d'));
 $('faces').addEventListener('click', () => setFaces(!faces));
 $('print').addEventListener('click', () => print());
+$('deal').addEventListener('click', () => { setDeck(deal(selected)); say(`Dealt ${TILES} tiles.`); });
 $('png').addEventListener('click', async () => {
-  try { await savePng(state, tileset); say('Saved geomorph-cube.png'); } catch { say('Could not create the image.'); }
+  try { await savePng(state, deck); say('Saved geomorph-cube.png'); } catch { say('Could not create the image.'); }
 });
 $('link').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(location.href); say('Link copied.'); } catch { say('Copy the address bar to share this map.'); }
@@ -174,17 +205,42 @@ addEventListener('hashchange', () => {
   const p = new URLSearchParams(location.hash.slice(1));
   const next = decode(p.get('s'));
   if (next && encode(next) !== encode(state)) { past.push(state); future = []; state = next; draw(true); }
-  const t = findSet(p.get('t'));
-  if (t !== tileset) setTileset(t, { save: false });
+  const d = decodeDeck(p.get('d')) ?? DEFAULT_DECK;
+  if (!deck || encodeDeck(d) !== encodeDeck(deck)) {
+    selected = setsIn(d);
+    showPicker();
+    setDeck(d);
+  }
   const v = p.get('view') === '3d' ? '3d' : 'flat';
   if (v !== view) setView(v);
 });
 
-for (const s of SETS) $('tileset').append(new Option(s.name, s.id));
-$('tileset-label').hidden = SETS.length < 2;
-$('tileset').addEventListener('change', (e) => setTileset(findSet(e.target.value)));
+// A group's name shares a no-wrap box with its first checkbox, so it never
+// ends a line on its own.
+let group;
+for (const s of SETS) {
+  let into = $('sets');
+  if (s.group && s.group !== group) {
+    into = document.createElement('span');
+    into.className = 'set-group';
+    into.textContent = `${s.group}: `;
+    $('sets').append(into);
+  }
+  group = s.group;
+  const label = document.createElement('label');
+  const box = document.createElement('input');
+  box.type = 'checkbox';
+  box.value = s.id;
+  if (s.group) box.setAttribute('aria-label', `${s.group} ${s.name} (${s.count} tiles)`);
+  label.append(box, ` ${s.name} (${s.count})`);
+  into.append(label);
+}
+$('sets').addEventListener('change', () => {
+  select([...$('sets').querySelectorAll('input:checked')].map((b) => b.value));
+});
 
 setFaces(faces);
-setTileset(tileset, { save: false });
+showPicker();
+setDeck(deck, { save: false });
 setView(view);
 draw(false);
