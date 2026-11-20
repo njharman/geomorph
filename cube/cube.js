@@ -60,3 +60,52 @@ export function applyMove(state, move) {
   }
   return next;
 }
+
+/** The 12 positions a move changes (its destinations). */
+export const affected = (move) => {
+  const steps = MOVE_DATA[move];
+  if (!steps) throw new Error(`unknown move: ${move}`);
+  return steps.map(([dest]) => dest);
+};
+
+/** Apply `n` random moves (never immediately undoing the last). Returns {state, moves}. */
+export function scramble(state, n = 20, rng = Math.random) {
+  const moves = [];
+  for (let i = 0; i < n; i++) {
+    const last = moves.at(-1);
+    const choices = MOVES.filter((m) => !last || m !== inverse(last));
+    const move = choices[Math.floor(rng() * choices.length)];
+    moves.push(move);
+    state = applyMove(state, move);
+  }
+  return { state, moves };
+}
+
+const VERSION = '1';
+const DIGITS = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+/** Compact string for URLs: version, then per position (a-d order) tile char + quarter-turn digit. */
+export function encode(state) {
+  const body = POSITIONS.map((p) => {
+    const quarter = ((((state[p].rot / 90) % 4) + 4) % 4);
+    return DIGITS[state[p].tile] + quarter;
+  }).join('');
+  return `${VERSION}.${body}`;
+}
+
+/** Inverse of encode; returns null for anything malformed. */
+export function decode(text) {
+  if (typeof text !== 'string') return null;
+  const m = /^1\.([0-9a-o][0-3]){24}$/.exec(text);
+  if (!m) return null;
+  const body = text.slice(2);
+  const state = {};
+  const seen = new Set();
+  POSITIONS.forEach((p, i) => {
+    const tile = DIGITS.indexOf(body[i * 2]);
+    seen.add(tile);
+    state[p] = { tile, rot: Number(body[i * 2 + 1]) * 90 };
+  });
+  if (seen.size !== 24 || seen.has(0)) return null;
+  return state;
+}

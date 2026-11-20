@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MOVES, POSITIONS, applyMove, inverse, newCube } from '../cube/cube.js';
+import { MOVES, POSITIONS, affected, applyMove, decode, encode, inverse, newCube, scramble } from '../cube/cube.js';
 import { turnLayer } from './oracle.js';
 
 // Layer each move turns (face number) and its sense about that face's normal.
@@ -62,4 +62,39 @@ test('applyMove does not mutate its input', () => {
   const s = newCube();
   applyMove(s, '1up');
   assert.deepEqual(s, newCube());
+});
+
+test('affected(move) lists the 12 positions the physical turn changes', () => {
+  for (const move of MOVES) {
+    const [face, sign] = PHYSICAL[move];
+    assert.deepEqual([...affected(move)].sort(), Object.keys(turnLayer(face, sign)).sort(), move);
+  }
+});
+
+const seeded = (seed) => () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32);
+
+test('scramble is deterministic for a seed, keeps all tiles, never repeats-then-undoes', () => {
+  const a = scramble(newCube(), 30, seeded(7));
+  const b = scramble(newCube(), 30, seeded(7));
+  assert.deepEqual(a, b);
+  assert.equal(a.moves.length, 30);
+  a.moves.slice(1).forEach((m, i) => assert.notEqual(m, inverse(a.moves[i])));
+  assert.deepEqual(
+    POSITIONS.map((p) => a.state[p].tile).sort((x, y) => x - y),
+    Array.from({ length: 24 }, (_, i) => i + 1),
+  );
+});
+
+test('encode/decode round-trips (rotation normalised mod 360)', () => {
+  const { state } = scramble(newCube(), 50, seeded(3));
+  assert.deepEqual(norm(decode(encode(state))), norm(state));
+  assert.deepEqual(decode(encode(newCube())), newCube());
+});
+
+test('decode rejects malformed input', () => {
+  const good = encode(newCube());
+  const dupe = good.slice(0, 2) + good.slice(2, 4) + good.slice(2, 4) + good.slice(6);
+  for (const bad of [null, '', 'x', good.slice(1), good + '0', '2' + good.slice(1), dupe, good.slice(0, -1) + '9']) {
+    assert.equal(decode(bad), null, String(bad));
+  }
 });

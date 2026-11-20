@@ -1,29 +1,181 @@
 :root {
-  --tile: clamp(48px, calc((100vw - 2rem) / 6), 150px);
+  --bg: #efe4cc;
+  --ink: #2b2118;
+  --muted: #6b5a47;
+  --accent: #8b2c1d;
+  --paper: #fbf7ec;
+  --line: #c9b78f;
+  --btn: #f6efdc;
+  --btn-hover: #fffaf0;
+  --shadow: 0 1px 2px rgb(60 40 10 / 20%), 0 8px 24px rgb(60 40 10 / 18%);
+
+  /* Tile size: fit the width (6 tiles + 2 gutters) and the height (8 tiles + 2 gutters). */
+  --gutter: clamp(1.5rem, calc(var(--tile) * 0.42), 2.6rem);
+  --tile: clamp(40px, min(calc((100vw - 2rem - 2 * 2.6rem) / 6), calc((100dvh - 19rem) / 8)), 150px);
+  --t: calc(var(--tile) * 0.85);
+  color-scheme: light dark;
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1914;
+    --ink: #eadfc8;
+    --muted: #a8977e;
+    --accent: #e08a6f;
+    --line: #5a4a38;
+    --btn: #2d251d;
+    --btn-hover: #3a3025;
+    --shadow: 0 1px 2px rgb(0 0 0 / 50%), 0 8px 24px rgb(0 0 0 / 45%);
+  }
+}
+
+* { box-sizing: border-box; }
 
 body {
-  font-family: system-ui, sans-serif;
-  line-height: 1.5;
-  margin: 1rem;
+  margin: 0;
+  padding: 1rem;
+  background: var(--bg);
+  color: var(--ink);
+  font: 1rem/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-.controls {
-  display: grid;
-  grid-template-columns: repeat(6, auto);
-  gap: 0.25rem;
-  justify-content: start;
-  margin-block: 1rem;
+a { color: var(--accent); text-underline-offset: 0.15em; }
+
+h1 {
+  margin: 0;
+  font: 700 clamp(1.8rem, 5vw, 2.6rem)/1.1 Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  letter-spacing: 0.01em;
 }
 
-#map {
+.page-head, .toolbar, .status, main, .page-foot { max-width: 60rem; margin-inline: auto; }
+.lede { margin: 0.25rem 0 0.75rem; color: var(--muted); font-size: 1.1rem; }
+
+details { margin-bottom: 1rem; }
+summary { cursor: pointer; color: var(--accent); font-weight: 600; width: max-content; }
+summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+details[open] { padding: 0.25rem 1rem; background: var(--paper); color: #2b2118; border: 1px solid var(--line); border-radius: 6px; }
+details[open] a { color: #8b2c1d; }
+details[open] summary { margin-top: 0.5rem; }
+details p { max-width: 42rem; }
+
+kbd {
+  font: 0.85em ui-monospace, monospace;
+  padding: 0.05em 0.4em;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+}
+
+/* ---- buttons ---- */
+button {
+  font: inherit;
+  color: var(--ink);
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { background: var(--btn-hover); border-color: var(--accent); }
+button:active:not(:disabled) { transform: translateY(1px); }
+button:disabled { opacity: 0.45; cursor: default; }
+button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-bottom: 0.25rem; }
+.sep { width: 1px; align-self: stretch; margin-inline: 0.3rem; background: var(--line); }
+.status { min-height: 1.6em; margin-block: 0.25rem 0.5rem; color: var(--muted); font-size: 0.9rem; }
+
+/* ---- flat map ---- */
+main { display: flex; justify-content: center; }
+
+.net {
   display: grid;
-  grid-template-columns: repeat(6, var(--tile));
-  grid-template-rows: repeat(8, var(--tile));
+  grid-template-columns: var(--gutter) repeat(6, var(--tile)) var(--gutter);
+  grid-template-rows: var(--gutter) repeat(8, var(--tile)) var(--gutter);
   width: max-content;
+  background: var(--paper);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
 }
+.net[hidden], .cube-view[hidden] { display: none; }
 
 .geomorph {
-  width: var(--tile);
-  height: var(--tile);
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  outline: 1px solid rgb(0 0 0 / 22%);
+  outline-offset: -1px;
+  user-select: none;
 }
+.geomorph.hl { outline: 4px solid var(--accent); outline-offset: -4px; position: relative; z-index: 1; }
+
+/* Face borders and (optional) face numbers sit above the tiles but never catch the pointer. */
+.face { pointer-events: none; box-shadow: inset 0 0 0 2px rgb(0 0 0 / 60%); display: grid; place-items: center; }
+.face::after, .cube-face::after {
+  content: attr(data-face);
+  display: none;
+  font: 700 calc(var(--tile) * 1.1)/1 Georgia, serif;
+  color: rgb(139 44 29 / 45%);
+  pointer-events: none;
+}
+.show-faces .face::after, .show-faces .cube-face::after { display: block; }
+.cube-face { display: grid; place-items: center; }
+.cube-face .geomorph { grid-area: 1 / 1; }
+
+/* ---- arrows ---- */
+.arrow { padding: 0; margin: 2px; line-height: 1; border-radius: 4px; display: grid; place-items: center; }
+.arrow span { display: flex; align-items: center; justify-content: center; gap: 0.2em; font-size: 0.8rem; }
+.arrow b { font-weight: 700; }
+.arrow[data-move$="left"] span, .arrow[data-move$="right"] span { flex-direction: column; }
+
+/* ---- 3D view ---- */
+.cube-view { display: grid; justify-items: center; gap: 1rem; width: 100%; }
+.scene {
+  --tile: clamp(40px, min(24vw, 140px), 140px);
+  --t: calc(var(--tile) * 0.85);
+  width: calc(var(--tile) * 4.6);
+  height: calc(var(--tile) * 4.2);
+  display: grid;
+  place-items: center;
+  perspective: calc(var(--tile) * 14);
+  touch-action: none;
+  cursor: grab;
+}
+.scene:active { cursor: grabbing; }
+.cube3d { position: relative; width: calc(var(--t) * 2); height: calc(var(--t) * 2); transform-style: preserve-3d; }
+.cube-face {
+  position: absolute;
+  inset: 0;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  backface-visibility: hidden;
+  background: #fff;
+  box-shadow: inset 0 0 0 2px rgb(0 0 0 / 60%);
+}
+.cube-face::after { position: absolute; inset: 0; place-self: center; text-align: center; font-size: calc(var(--t) * 1.4); }
+.cube-face .geomorph { grid-area: auto; }
+.cube-face:has(.hl) { z-index: 1; }
+
+.moves { display: grid; grid-template-columns: repeat(6, auto); gap: 0.3rem; justify-content: center; }
+.moves button { padding: 0.3rem 0.6rem; font-size: 0.9rem; }
+
+.page-foot { margin-top: 2rem; color: var(--muted); font-size: 0.9rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  button:active:not(:disabled) { transform: none; }
+}
+
+/* ---- print: just the flat map, big and black on white ---- */
+@page { margin: 0.4in; }
+@media print {
+  :root { --tile: 1.2in; --gutter: 0; }
+  body { background: #fff; padding: 0; }
+  .page-head, .toolbar, .status, .page-foot, .cube-view, .arrow, noscript { display: none !important; }
+  .net, .net[hidden] { display: grid !important; box-shadow: none; background: #fff; margin-inline: auto; }
+  .geomorph.hl { outline: 1px solid rgb(0 0 0 / 22%); outline-offset: -1px; }
+  .show-faces .face::after { display: none; }
+}
+
+@media (max-width: 40rem) { .sep { display: none; } }

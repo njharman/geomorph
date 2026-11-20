@@ -5,30 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Geomorph Cube</title>
   <meta name="description" content="A rotating Rubik's-style cube of geomorph dungeon map tiles.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Geomorph Cube">
+  <meta property="og:description" content="A 2x2 Rubik's Cube of dungeon map tiles. Turn it and the dungeon rearranges.">
+  <meta property="og:url" content="https://njharman.github.io/geomorph/">
+  <meta property="og:image" content="https://njharman.github.io/geomorph/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script type="module" src="main.js"></script>
 </head>
 <body>
-  <p>Inspired by <a href="http://postapocapost.blogspot.com/2010/03/roobiks-geomorphing-dungeon.html">this blog</a>, and <a href="http://en.wikipedia.org/wiki/Cube_%28film%29">this movie</a>.</p>
-  <p>Geomorph made by <a href="http://www.risusmonkey.com/search/label/Geomorphs?updated-max=2010-02-27T22%3A39%3A00-05%3A00&amp;max-results=20">Risus Monkey</a>. More Geomorph maps and original geomorph size/format by <a href="http://rpgcharacters.wordpress.com">Dyson</a>.</p>
-  <p>Code by <a href="http://trollandflame.blogspot.com">njharman</a>, <a href="https://github.com/njharman/geomorph">source on GitHub</a>, or <a href="geomorphcube.zip">download zip of the code and images</a>.</p>
-  <p>Imagine the cross below folded up into a cube. Further imagine it as a 2x2 Rubik's Cube with 6 "columns" of rotation. 1-4 being first four columns left to right. 5-6 being horizontal, the two rows across the beam. Being a Rubik's Cube those columns can be rotated up or down (which shifts/rotates various other tiles/faces/sides of the cube). If you grasped all that, awesome! Now imagine an evil intelligence has placed a party of characters into this dungeon cube and laughs maniacally whenever (s)he rotates the cube shifting the exit the party was about to reach. That evil intelligence is you, DM.</p>
-  <hr>
-  <div class="controls">
-    <button data-move="1up">col 1 up</button>
-    <button data-move="2up">col 2 up</button>
-    <button data-move="3up">col 3 up</button>
-    <button data-move="4up">col 4 up</button>
-    <button data-move="5right">col 5 right</button>
-    <button data-move="6right">col 6 right</button>
-    <button data-move="1down">col 1 down</button>
-    <button data-move="2down">col 2 down</button>
-    <button data-move="3down">col 3 down</button>
-    <button data-move="4down">col 4 down</button>
-    <button data-move="5left">col 5 left</button>
-    <button data-move="6left">col 6 left</button>
+  <header class="page-head">
+    <h1>Geomorph Cube</h1>
+    <p class="lede">A 2&times;2 Rubik's Cube of dungeon map tiles. Turn it and the dungeon rearranges.</p>
+    <details>
+      <summary>How it works</summary>
+      <p>Inspired by <a href="https://postapocapost.blogspot.com/2010/03/roobiks-geomorphing-dungeon.html">this blog</a>.</p>
+      <p>Imagine the cross below folded up into a cube. Further imagine it as a 2x2 Rubik's Cube with 6 "columns" of rotation. 1-4 being first four columns left to right. 5-6 being horizontal, the two rows across the beam. Being a Rubik's Cube those columns can be rotated up or down (which shifts/rotates various other tiles/faces/sides of the cube). If you grasped all that, awesome! Now imagine an evil intelligence has placed a party of characters into this dungeon cube and laughs maniacally whenever (s)he rotates the cube shifting the exit the party was about to reach. That evil intelligence is you, DM.</p>
+      <p>Use the arrows around the map: the number is the column or row, and hovering an arrow outlines the 12 tiles it will move. The address bar always holds the current map, so you can bookmark or share it.</p>
+      <p>Keys: <kbd>1</kbd>&ndash;<kbd>6</kbd> turn a column or row (<kbd>Shift</kbd> reverses), <kbd>Z</kbd> undo, <kbd>Y</kbd> redo, <kbd>S</kbd> scramble, <kbd>R</kbd> reset, <kbd>V</kbd> flat/3D, <kbd>F</kbd> face numbers.</p>
+    </details>
+  </header>
+
+  <div class="toolbar" role="toolbar" aria-label="Cube controls">
+    <button type="button" id="undo" aria-keyshortcuts="Z" title="Undo (Z)">Undo</button>
+    <button type="button" id="redo" aria-keyshortcuts="Y" title="Redo (Y)">Redo</button>
+    <button type="button" id="reset" aria-keyshortcuts="R" title="Back to the starting map (R)">Reset</button>
+    <button type="button" id="scramble" aria-keyshortcuts="S" title="Make 20 random turns (S)">Scramble</button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="view" aria-keyshortcuts="V" aria-pressed="false" title="Switch between flat map and 3D cube (V)">3D view</button>
+    <button type="button" id="faces" aria-keyshortcuts="F" aria-pressed="false" title="Show face numbers (F)">Face numbers</button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="png" title="Download the map as an image">Save PNG</button>
+    <button type="button" id="print" title="Print the flat map">Print</button>
+    <button type="button" id="link" title="Copy a link to this exact map">Copy link</button>
   </div>
-  <div id="map"></div>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+
+  <main>
+    <div id="map" class="net" aria-label="Flat map of the cube"></div>
+    <div id="cube-view" class="cube-view" hidden>
+      <div id="scene" class="scene" aria-label="3D cube, drag to rotate"></div>
+      <div id="moves" class="moves" role="group" aria-label="Turns"></div>
+    </div>
+  </main>
+
+  <footer class="page-foot">
+    <p>Geomorph made by <a href="https://web.archive.org/web/20260228000718/http://www.risusmonkey.com/search/label/Geomorphs">Risus Monkey</a>. More Geomorph maps and original geomorph size/format by <a href="https://dysonlogos.blog">Dyson</a>.</p>
+    <p>Code by <a href="https://trollandflame.blogspot.com">njharman</a>, <a href="https://github.com/njharman/geomorph">source on GitHub</a>, or <a href="geomorphcube.zip">download zip of the code and images</a>.</p>
+  </footer>
   <noscript>This page needs JavaScript.</noscript>
 </body>
 </html>
