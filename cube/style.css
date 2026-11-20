@@ -1,0 +1,29 @@
+:root {
+  --tile: clamp(48px, calc((100vw - 2rem) / 6), 150px);
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  margin: 1rem;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  gap: 0.25rem;
+  justify-content: start;
+  margin-block: 1rem;
+}
+
+#map {
+  display: grid;
+  grid-template-columns: repeat(6, var(--tile));
+  grid-template-rows: repeat(8, var(--tile));
+  width: max-content;
+}
+
+.geomorph {
+  width: var(--tile);
+  height: var(--tile);
+}
