@@ -14,7 +14,7 @@ const STORE = 'geomorph-cube';
 const GLYPH = { up: '▲︎', down: '▼︎', left: '◀︎', right: '▶︎' };
 const parseMove = (move) => {
   const [, n, dir] = /^(\d)(\w+)$/.exec(move);
-  return { n, dir, kind: Number(n) <= 4 ? 'column' : 'row' };
+  return { n, dir, kind: n === '1' || n === '6' ? 'row' : 'column' };
 };
 
 /** A turn button; used by the flat map (arrows) and the 3D panel. */
@@ -34,7 +34,7 @@ function moveButton(move, withText = false) {
 const map = $('map');
 const net = createNet(map, (move) => moveButton(move));
 const cube3d = createCube3d($('scene'));
-for (const move of ['1up', '2up', '3up', '4up', '5right', '6right', '1down', '2down', '3down', '4down', '5left', '6left']) {
+for (const move of ['1right', '2up', '3up', '4up', '5up', '6right', '1left', '2down', '3down', '4down', '5down', '6left']) {
   $('moves').append(moveButton(move, true));
 }
 
@@ -192,7 +192,7 @@ document.addEventListener('keydown', (e) => {
   if (e.altKey || e.metaKey || e.target.closest?.('input, textarea, select')) return;
   const digit = /^Digit([1-6])$/.exec(e.code)?.[1];
   if (digit && !e.ctrlKey) {
-    const dir = Number(digit) <= 4 ? ['up', 'down'] : ['right', 'left'];
+    const dir = digit === '1' || digit === '6' ? ['right', 'left'] : ['up', 'down'];
     turn(`${digit}${dir[e.shiftKey ? 1 : 0]}`);
   } else if (e.code === 'KeyZ' && e.ctrlKey) {
     e.shiftKey ? redo() : undo();

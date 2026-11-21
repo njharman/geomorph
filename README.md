@@ -28,7 +28,7 @@ The 3D view is turn-only.
 
 Keys:
 
-- `1`-`6` turn a column/row (Shift reverses)
+- `1`-`6` turn that face's column/row (Shift reverses)
 - `Z` undo
 - `Y` redo
 - `S` scramble

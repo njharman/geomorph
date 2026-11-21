@@ -132,7 +132,7 @@ main { display: flex; justify-content: center; }
 .geomorph.hl { outline: 4px solid var(--accent); outline-offset: -4px; position: relative; z-index: 1; }
 
 /* Face borders and (optional) face numbers sit above the tiles but never catch the pointer. */
-.face { pointer-events: none; box-shadow: inset 0 0 0 2px rgb(0 0 0 / 60%); display: grid; place-items: center; }
+.face { position: relative; z-index: 1; pointer-events: none; box-shadow: inset 0 0 0 2px rgb(0 0 0 / 60%); display: grid; place-items: center; }
 .face::after, .cube-face::after {
   content: attr(data-face);
   display: none;

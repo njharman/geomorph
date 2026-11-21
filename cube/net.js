@@ -34,11 +34,11 @@ const cell = (pos) => {
 // Columns 1 and 2 use the empty cells beside face 1 and face 6 so the arrows
 // touch the tiles they turn; the rest sit in the outer gutters.
 export const ARROWS = {
-  '1up': [2, 3, 'end'], '1down': [2, 6, 'start'],
+  '5up': [2, 3, 'end'], '5down': [2, 6, 'start'],
   '2up': [3, 3, 'end'], '2down': [3, 6, 'start'],
-  '3up': [4, 1], '3down': [4, 10],
-  '4up': [5, 1], '4down': [5, 10],
-  '5left': [1, 4], '5right': [8, 4],
+  '4up': [4, 1], '4down': [4, 10],
+  '3up': [5, 1], '3down': [5, 10],
+  '1left': [1, 4], '1right': [8, 4],
   '6left': [1, 5], '6right': [8, 5],
 };
 

@@ -5,11 +5,11 @@ import { turnLayer } from './oracle.js';
 
 // Layer each move turns (face number) and its sense about that face's normal.
 const PHYSICAL = {
-  '1up': [5, 1], '1down': [5, -1],
+  '5up': [5, 1], '5down': [5, -1],
   '2up': [2, -1], '2down': [2, 1],
-  '3up': [4, 1], '3down': [4, -1],
-  '4up': [3, -1], '4down': [3, 1],
-  '5right': [1, 1], '5left': [1, -1],
+  '4up': [4, 1], '4down': [4, -1],
+  '3up': [3, -1], '3down': [3, 1],
+  '1right': [1, 1], '1left': [1, -1],
   '6right': [6, -1], '6left': [6, 1],
 };
 
@@ -60,7 +60,7 @@ test('a long scramble keeps all 24 tiles and can be undone', () => {
 
 test('applyMove does not mutate its input', () => {
   const s = newCube();
-  applyMove(s, '1up');
+  applyMove(s, '5up');
   assert.deepEqual(s, newCube());
 });
 
