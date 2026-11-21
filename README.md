@@ -11,7 +11,7 @@ Layout
   - `net.js` flat map (animated), `cube3d.js` 3D view, `export.js` PNG export
   - `sets.js` tile sets, and decks: which image each of the 24 tiles shows
   - `index.html`, `style.css` page and styles
-  - `img-risus/` Risus Monkey tiles; `img-talysman/{b,s,g,f}/` Talysman tiles (WebP, 300x300)
+  - `img-risus/` Risus Monkey tiles; `img-talysman/{b,s,g,f}/` Talysman tiles; `img-dyson/{l,w}/` Dyson Logos tiles (WebP, 300x300)
   - `favicon.svg`, `og.png` icon and social preview image
 - `test/` tests, including an independent 3D model that checks every move
 
@@ -51,5 +51,6 @@ Code is public domain ([Unlicense](LICENSE)). The tile images are not covered
 by that license:
 - `cube/img-risus/` by Tim Ballew (Risus Monkey).
 - `cube/img-talysman/` by Talysman (https://9and30kingdoms.blogspot.com), licensed [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/); converted to 300x300 WebP.
+- `cube/img-dyson/` cartography by Dyson Logos (https://dysonlogos.blog): the 2022 Cave Lair Geomorphs (sets 1 and 2) and the 2021 Sewermorphs (sets 1 and 2). Released under his Standard licence (non-commercial use, credit and link required, no relicensing), cropped and converted to 300x300 WebP. See https://dysonlogos.blog/about/copyright/.
 
 The geomorph format originated with Dyson Logos (https://dysonlogos.blog).

@@ -8,6 +8,7 @@ const BY_NC_SA = '<a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">C
 const DYSON_URL = 'https://dysonlogos.blog';
 export const FORMAT_CREDIT = `Geomorph format originated by <a href="${DYSON_URL}">Dyson Logos</a>.`;
 
+const DYSON_CREDIT = `Cartography by <a href="${DYSON_URL}">Dyson Logos</a>.`;
 const RISUS_CREDIT = `Geomorph tiles by Tim Ballew (<a href="${RISUS_URL}">Risus Monkey</a>).`;
 const TALYSMAN_CREDIT = `Geomorph tiles by Talysman (<a href="${TALYSMAN_URL}">The Nine and Thirty Kingdoms</a>), ${BY_NC_SA}.`;
 
@@ -17,6 +18,8 @@ export const SETS = [
   { id: 'talysman-s', code: 's', group: 'Talysman', name: 'Statues', dir: 'img-talysman/s', count: 12, credit: TALYSMAN_CREDIT },
   { id: 'talysman-g', code: 'g', group: 'Talysman', name: 'Gears', dir: 'img-talysman/g', count: 18, credit: TALYSMAN_CREDIT },
   { id: 'talysman-f', code: 'f', group: 'Talysman', name: 'Floors', dir: 'img-talysman/f', count: 18, credit: TALYSMAN_CREDIT },
+  { id: 'dyson-l', code: 'l', group: 'Dyson Logos', name: 'Cave lairs', dir: 'img-dyson/l', count: 12, credit: DYSON_CREDIT },
+  { id: 'dyson-w', code: 'w', group: 'Dyson Logos', name: 'Sewers', dir: 'img-dyson/w', count: 12, credit: DYSON_CREDIT },
 ];
 
 export const TILES = 24;
