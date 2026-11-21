@@ -8,7 +8,7 @@
   <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Geomorph Cube">
-  <meta property="og:description" content="A 2x2 Rubik's Cube of dungeon map tiles. Turn it and the dungeon rearranges.">
+  <meta property="og:description" content="A 2x2 Rubik's Cube of dungeon map tiles. Rotate a face and the dungeon rearranges.">
   <meta property="og:url" content="https://njharman.github.io/geomorph/">
   <meta property="og:image" content="https://njharman.github.io/geomorph/og.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -19,21 +19,20 @@
 <body>
   <header class="page-head">
     <h1>Geomorph Cube</h1>
-    <p class="lede">A 2&times;2 Rubik's Cube of dungeon map tiles. Turn it and the dungeon rearranges.</p>
+    <p class="lede">A 2&times;2 Rubik's Cube of dungeon map tiles. Rotate a face and the dungeon rearranges.</p>
     <details>
       <summary>How it works</summary>
       <p>Inspired by <a href="https://postapocapost.blogspot.com/2010/03/roobiks-geomorphing-dungeon.html">this blog</a>.</p>
       <p>Imagine the cross below folded up into a cube. Further imagine it as a 2x2 Rubik's Cube where each of the 6 faces can be turned, taking its column or row of tiles with it. Faces 5, 2, 4 and 3 turn their columns (left to right on the map), faces 1 and 6 turn the two rows across the beam. Those can be rotated up or down (which shifts/rotates various other tiles/faces/sides of the cube). If you grasped all that, awesome! Now imagine an evil intelligence has placed a party of characters into this dungeon cube and laughs maniacally whenever (s)he rotates the cube shifting the exit the party was about to reach. That evil intelligence is you, DM.</p>
       <p>Use the arrows around the map: the number is the face it turns (press <kbd>F</kbd> to show face numbers on the map), and hovering an arrow outlines the 12 tiles it will move. The address bar always holds the current map, so you can bookmark or share it.</p>
-      <p>Tiles: tick any mix of geomorph sets. Each change, or a press of Deal, picks a random 24 tiles from the ticked sets; the map's arrangement stays the same. Tiles from different sets fit together.</p>
-      <p>Click any single tile in the flat map to turn just that tile a quarter turn clockwise; undo works on it too.</p>
-      <p>Keys: <kbd>1</kbd>&ndash;<kbd>6</kbd> turn that face's column or row (<kbd>Shift</kbd> reverses), <kbd>Z</kbd> undo, <kbd>Y</kbd> redo, <kbd>S</kbd> scramble, <kbd>R</kbd> reset, <kbd>V</kbd> flat/3D, <kbd>F</kbd> face numbers.</p>
+      <p>Tiles: tick any mix of geomorph sets. Each change, or a press of Deal, picks 24 random tiles from the ticked sets; the map's arrangement stays the same. Tiles from different sets fit together.</p>
+      <p>Click any single tile in the flat map to turn just that tile a quarter turn clockwise.</p>
+      <p>Keys: <kbd>1</kbd>&ndash;<kbd>6</kbd> turn that face's column or row (<kbd>Shift</kbd> reverses), <kbd>S</kbd> scramble, <kbd>R</kbd> reset, <kbd>V</kbd> flat/3D, <kbd>F</kbd> face numbers.</p>
     </details>
   </header>
 
   <div class="toolbar" role="toolbar" aria-label="Cube controls">
-    <button type="button" id="undo" aria-keyshortcuts="Z" title="Undo (Z)">Undo</button>
-    <button type="button" id="redo" aria-keyshortcuts="Y" title="Redo (Y)">Redo</button>
+    <button type="button" id="deal" class="deal" title="Pick 24 random tiles from the selected sets, keeping the map's arrangement"><span class="on">Deal</span><span class="off">Select Sets</span></button>
     <button type="button" id="reset" aria-keyshortcuts="R" title="Back to the starting map (R)">Reset</button>
     <button type="button" id="scramble" aria-keyshortcuts="S" title="Make 20 random turns (S)">Scramble</button>
     <span class="sep" aria-hidden="true"></span>
@@ -44,11 +43,8 @@
     <button type="button" id="print" title="Print the flat map">Print</button>
     <button type="button" id="link" title="Copy a link to this exact map">Copy link</button>
   </div>
-  <div class="picker" role="group" aria-labelledby="picker-label">
-    <span id="picker-label" class="picker-label">Tiles:</span>
+  <div class="picker" role="group" aria-label="Tile sets">
     <div id="sets" class="sets"></div>
-    <button type="button" id="deal" class="deal" title="Pick a new random 24 tiles from the selected sets, keeping the map's arrangement"><span class="on">Deal</span><span class="off">Select Sets</span></button>
-    <p id="pick-hint" class="hint">Pick geomorph sets, then Deal for a random 24.</p>
   </div>
   <p id="status" class="status" role="status" aria-live="polite"></p>
 
@@ -61,7 +57,7 @@
   </main>
 
   <footer class="page-foot">
-    <p id="tile-credit">Geomorph tiles by Tim Ballew (<a href="https://web.archive.org/web/20260228000718/http://www.risusmonkey.com/search/label/Geomorphs">Risus Monkey</a>). Geomorph format originated by <a href="https://dysonlogos.blog">Dyson Logos</a>.</p>
+    <p id="tile-credit">Geomorph format originated by <a href="https://dysonlogos.blog">Dyson Logos</a>. Geomorph tiles by Tim Ballew (<a href="https://web.archive.org/web/20160223194827/http://www.risusmonkey.com/search/label/Geomorphs">Risus Monkey</a>).</p>
     <p>Code by <a href="https://trollandflame.blogspot.com">njharman</a>, <a href="https://github.com/njharman/geomorph">source on GitHub</a>, or <a href="geomorphcube.zip">download zip of the code and images</a>.</p>
   </footer>
   <noscript>This page needs JavaScript.</noscript>

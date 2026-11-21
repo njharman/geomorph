@@ -83,7 +83,7 @@ test('decodeDeck rejects malformed, unknown or repeated tiles', () => {
 });
 
 test('deckCredits names only the sets the deck uses', () => {
-  assert.equal(deckCredits(DEFAULT_DECK), `${SETS[0].credit} ${FORMAT_CREDIT}`);
+  assert.equal(deckCredits(DEFAULT_DECK), `${FORMAT_CREDIT} ${SETS[0].credit}`);
   const talysman = deckCredits(deal(['talysman-b', 'talysman-s'], seeded(1)));
   assert.match(talysman, /Talysman/);
   assert.doesNotMatch(talysman, /Risus/);

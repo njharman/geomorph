@@ -7,7 +7,7 @@ Layout
 ------
 - `cube/` the site (deployed to GitHub Pages as-is, no build step)
   - `cube.js` cube model, pure logic: tiles, moves, rotations, scramble, URL encoding
-  - `main.js` state, undo/redo, persistence, keyboard and buttons
+  - `main.js` state, persistence, keyboard and buttons
   - `net.js` flat map (animated), `cube3d.js` 3D view, `export.js` PNG export
   - `sets.js` tile sets, and decks: which image each of the 24 tiles shows
   - `index.html`, `style.css` page and styles
@@ -23,14 +23,12 @@ tile sets; each change, or Deal, picks a random 24 tiles from them, keeping the
 map's arrangement. The plain URL is the Risus Monkey tiles in order.
 
 Click a tile in the flat map to rotate just that one tile 90 degrees clockwise
-(animated; it is a normal undoable step and is saved in the share link).
+(animated; it is saved in the share link).
 The 3D view is turn-only.
 
 Keys:
 
 - `1`-`6` turn that face's column/row (Shift reverses)
-- `Z` undo
-- `Y` redo
 - `S` scramble
 - `R` reset
 - `V` flat/3D

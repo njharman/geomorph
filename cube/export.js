@@ -1,10 +1,12 @@
 // Draws the flat map (6x8 tiles) onto a canvas and offers it as a PNG download.
 import { POSITIONS } from './cube.js';
 import { FACE_ORIGIN } from './net.js';
-import { DEFAULT_DECK, deckSrc } from './sets.js';
+import { DEFAULT_DECK, deckCreditText, deckSrc } from './sets.js';
 
 const TILE = 240;
 const MARGIN = 40;
+const FONT = 22;
+const LINE = 30;
 const SUB = { a: [0, 0], b: [1, 0], c: [0, 1], d: [1, 1] };
 
 const load = (src) =>
@@ -18,8 +20,17 @@ const load = (src) =>
 export async function renderPng(state, deck = DEFAULT_DECK) {
   const canvas = document.createElement('canvas');
   canvas.width = 6 * TILE + 2 * MARGIN;
-  canvas.height = 8 * TILE + 2 * MARGIN;
   const ctx = canvas.getContext('2d');
+  // Credits go under the map, wrapped to its width.
+  ctx.font = `${FONT}px sans-serif`;
+  const lines = [];
+  let line = '';
+  for (const word of deckCreditText(deck).split(/\s+/)) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && ctx.measureText(next).width > 6 * TILE) { lines.push(line); line = word; } else line = next;
+  }
+  if (line) lines.push(line);
+  canvas.height = 8 * TILE + 2 * MARGIN + lines.length * LINE + 10;
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.imageSmoothingQuality = 'high';
@@ -40,6 +51,11 @@ export async function renderPng(state, deck = DEFAULT_DECK) {
   for (const [x, y] of Object.values(FACE_ORIGIN)) {
     ctx.strokeRect(MARGIN + x * TILE, MARGIN + y * TILE, 2 * TILE, 2 * TILE);
   }
+  ctx.fillStyle = '#000';
+  ctx.font = `${FONT}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  lines.forEach((text, i) => ctx.fillText(text, canvas.width / 2, MARGIN + 8 * TILE + 24 + i * LINE));
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
 }
 

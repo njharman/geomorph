@@ -2,7 +2,7 @@
 // sets sharing a group (artist) are listed together in the picker.
 // The cube always has 24 tiles; a deck says which image each tile (1..24)
 // shows. A deck is dealt at random from the sets the user has selected.
-const RISUS_URL = 'https://web.archive.org/web/20260228000718/http://www.risusmonkey.com/search/label/Geomorphs';
+const RISUS_URL = 'https://web.archive.org/web/20160223194827/http://www.risusmonkey.com/search/label/Geomorphs';
 const TALYSMAN_URL = 'https://9and30kingdoms.blogspot.com/search/label/geomorph';
 const BY_NC_SA = '<a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a>';
 const DYSON_URL = 'https://dysonlogos.blog';
@@ -13,7 +13,7 @@ const RISUS_CREDIT = `Geomorph tiles by Tim Ballew (<a href="${RISUS_URL}">Risus
 const TALYSMAN_CREDIT = `Geomorph tiles by Talysman (<a href="${TALYSMAN_URL}">The Nine and Thirty Kingdoms</a>), ${BY_NC_SA}.`;
 
 export const SETS = [
-  { id: 'risus', code: 'r', name: 'Risus Monkey', dir: 'img-risus', count: 24, credit: RISUS_CREDIT },
+  { id: 'risus', code: 'r', group: 'Risus Monkey', name: 'Dungeons', dir: 'img-risus', count: 24, credit: RISUS_CREDIT },
   { id: 'talysman-b', code: 'b', group: 'Talysman', name: 'Barriers', dir: 'img-talysman/b', count: 12, credit: TALYSMAN_CREDIT },
   { id: 'talysman-s', code: 's', group: 'Talysman', name: 'Statues', dir: 'img-talysman/s', count: 12, credit: TALYSMAN_CREDIT },
   { id: 'talysman-g', code: 'g', group: 'Talysman', name: 'Gears', dir: 'img-talysman/g', count: 18, credit: TALYSMAN_CREDIT },
@@ -79,6 +79,9 @@ export const isDefaultDeck = (deck) => !!deck && encodeDeck(deck) === encodeDeck
 /** Image path of tile (1..24) in a deck. */
 export const deckSrc = (deck, tile) => tileSrc(deck[tile - 1].set, deck[tile - 1].n);
 
-/** Credit line (HTML) for the sets a deck uses, plus the format credit. */
+/** Credit line (HTML): the format credit first, then one per set the deck uses. */
 export const deckCredits = (deck) =>
-  [...new Set(SETS.filter((s) => deck?.some((r) => r.set === s)).map((s) => s.credit)), FORMAT_CREDIT].join(' ');
+  [FORMAT_CREDIT, ...new Set(SETS.filter((s) => deck?.some((r) => r.set === s)).map((s) => s.credit))].join(' ');
+
+/** The same credits as plain text, for the PNG. */
+export const deckCreditText = (deck) => deckCredits(deck).replace(/<[^>]*>/g, '');

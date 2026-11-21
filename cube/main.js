@@ -8,8 +8,8 @@ import {
 } from './sets.js';
 
 const $ = (id) => document.getElementById(id);
-const HISTORY_LIMIT = 200;
 const STORE = 'geomorph-cube';
+const DEAL_TITLE = `Pick ${TILES} random tiles from the selected sets, keeping the map's arrangement`;
 
 const GLYPH = { up: '▲︎', down: '▼︎', left: '◀︎', right: '▶︎' };
 const parseMove = (move) => {
@@ -38,7 +38,7 @@ for (const move of ['1right', '2up', '3up', '4up', '5up', '6right', '1left', '2d
   $('moves').append(moveButton(move, true));
 }
 
-// ---- state, history, persistence -----------------------------------------
+// ---- state, persistence -----------------------------------------
 const store = {
   get(key) { try { return localStorage.getItem(`${STORE}:${key}`); } catch { return null; } },
   set(key, value) { try { localStorage.setItem(`${STORE}:${key}`, value); } catch { /* private mode */ } },
@@ -55,8 +55,6 @@ let selected = storedSets === null ? DEFAULT_SELECTION : cleanSelection(storedSe
 if (params.has('d') && deck) selected = setsIn(deck);
 let view = (params.get('view') ?? store.get('view')) === '3d' ? '3d' : 'flat';
 let faces = store.get('faces') === '1';
-let past = [];
-let future = [];
 
 function persist() {
   // The starting map and flat view are the plain URL, with no hash.
@@ -73,22 +71,15 @@ function persist() {
 function draw(animate) {
   net.render(state, animate);
   cube3d.render(state);
-  $('undo').disabled = !past.length;
-  $('redo').disabled = !future.length;
   $('reset').disabled = encode(state) === encode(newCube());
   persist();
 }
 
 function commit(next, animate = true) {
-  past.push(state);
-  if (past.length > HISTORY_LIMIT) past.shift();
-  future = [];
   state = next;
   draw(animate);
 }
 
-const undo = () => { if (past.length) { future.push(state); state = past.pop(); draw(true); } };
-const redo = () => { if (future.length) { past.push(state); state = future.pop(); draw(true); } };
 const turn = (move) => commit(applyMove(state, move));
 const spin = (pos) => commit(rotateTile(state, pos));
 const reset = () => commit(newCube());
@@ -119,14 +110,14 @@ function setDeck(next, { save = true } = {}) {
   if (save) persist();
 }
 
-/** Sync the checkboxes, Deal button and hint with the selection. */
+/** Sync the checkboxes and Deal button with the selection. */
 function showPicker() {
   for (const box of $('sets').querySelectorAll('input')) box.checked = selected.includes(box.value);
   const have = pool(selected).length;
   $('deal').disabled = have < TILES;
-  $('pick-hint').textContent = have < TILES
+  $('deal').title = have < TILES
     ? `Select more sets: ${have} of ${TILES} tiles.`
-    : `Pick geomorph sets, then Deal for a random ${TILES}.`;
+    : DEAL_TITLE;
 }
 
 function select(ids) {
@@ -173,8 +164,6 @@ for (const [type, on] of [['pointerover', true], ['pointerout', false], ['focusi
   document.addEventListener(type, (event) => lit(event, on));
 }
 
-$('undo').addEventListener('click', undo);
-$('redo').addEventListener('click', redo);
 $('reset').addEventListener('click', reset);
 $('scramble').addEventListener('click', shuffle);
 $('view').addEventListener('click', () => setView(view === '3d' ? 'flat' : '3d'));
@@ -194,13 +183,9 @@ document.addEventListener('keydown', (e) => {
   if (digit && !e.ctrlKey) {
     const dir = digit === '1' || digit === '6' ? ['right', 'left'] : ['up', 'down'];
     turn(`${digit}${dir[e.shiftKey ? 1 : 0]}`);
-  } else if (e.code === 'KeyZ' && e.ctrlKey) {
-    e.shiftKey ? redo() : undo();
   } else if (e.ctrlKey) {
     return;
-  } else if (e.code === 'KeyZ') undo();
-  else if (e.code === 'KeyY') redo();
-  else if (e.code === 'KeyS') shuffle();
+  } else if (e.code === 'KeyS') shuffle();
   else if (e.code === 'KeyR') reset();
   else if (e.code === 'KeyV') setView(view === '3d' ? 'flat' : '3d');
   else if (e.code === 'KeyF') setFaces(!faces);
@@ -211,7 +196,7 @@ document.addEventListener('keydown', (e) => {
 addEventListener('hashchange', () => {
   const p = new URLSearchParams(location.hash.slice(1));
   const next = decode(p.get('s'));
-  if (next && encode(next) !== encode(state)) { past.push(state); future = []; state = next; draw(true); }
+  if (next && encode(next) !== encode(state)) { state = next; draw(true); }
   const d = decodeDeck(p.get('d')) ?? DEFAULT_DECK;
   if (!deck || encodeDeck(d) !== encodeDeck(deck)) {
     selected = setsIn(d);
@@ -222,15 +207,14 @@ addEventListener('hashchange', () => {
   if (v !== view) setView(v);
 });
 
-// A group's name shares a no-wrap box with its first checkbox, so it never
-// ends a line on its own.
+// One line per creator; an ungrouped set is its own line.
 let group;
+let into;
 for (const s of SETS) {
-  let into = $('sets');
-  if (s.group && s.group !== group) {
-    into = document.createElement('span');
+  if (!into || !s.group || s.group !== group) {
+    into = document.createElement('div');
     into.className = 'set-group';
-    into.textContent = `${s.group}: `;
+    if (s.group) into.append(`${s.group}: `);
     $('sets').append(into);
   }
   group = s.group;
@@ -240,7 +224,7 @@ for (const s of SETS) {
   box.value = s.id;
   if (s.group) box.setAttribute('aria-label', `${s.group} ${s.name} (${s.count} tiles)`);
   label.append(box, ` ${s.name} (${s.count})`);
-  into.append(label);
+  into.append(label, ' ');
 }
 $('sets').addEventListener('change', () => {
   select([...$('sets').querySelectorAll('input:checked')].map((b) => b.value));
