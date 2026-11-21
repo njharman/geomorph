@@ -22,6 +22,10 @@ The map is kept in the address bar (`#s=...`, plus `d=...` for the tiles and
 tile sets; each change, or Deal, picks a random 24 tiles from them, keeping the
 map's arrangement. The plain URL is the Risus Monkey tiles in order.
 
+Click a tile in the flat map to rotate just that one tile 90 degrees clockwise
+(animated; it is a normal undoable step and is saved in the share link).
+The 3D view is turn-only.
+
 Keys:
 
 - `1`-`6` turn a column/row (Shift reverses)

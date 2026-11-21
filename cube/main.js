@@ -1,4 +1,4 @@
-import { MOVES, affected, applyMove, decode, encode, newCube, scramble } from './cube.js';
+import { MOVES, affected, applyMove, decode, encode, newCube, rotateTile, scramble } from './cube.js';
 import { createNet } from './net.js';
 import { createCube3d } from './cube3d.js';
 import { savePng } from './export.js';
@@ -90,6 +90,7 @@ function commit(next, animate = true) {
 const undo = () => { if (past.length) { future.push(state); state = past.pop(); draw(true); } };
 const redo = () => { if (future.length) { past.push(state); state = future.pop(); draw(true); } };
 const turn = (move) => commit(applyMove(state, move));
+const spin = (pos) => commit(rotateTile(state, pos));
 const reset = () => commit(newCube());
 const shuffle = () => commit(scramble(state).state);
 
@@ -152,6 +153,12 @@ function say(text) {
 document.addEventListener('click', (event) => {
   const move = event.target.closest('[data-move]')?.dataset.move;
   if (MOVES.includes(move)) turn(move);
+});
+
+// Clicking a tile in the flat map turns just that tile a quarter turn clockwise.
+map.addEventListener('click', (event) => {
+  const img = event.target.closest('img.geomorph[data-pos]');
+  if (img && !img.classList.contains('blank')) spin(img.dataset.pos);
 });
 
 // Highlight the 12 tiles a turn changes while its button is hovered/focused.

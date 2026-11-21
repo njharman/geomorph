@@ -95,6 +95,7 @@ export function createNet(container, arrowButtons) {
         img.style.gridColumn = col;
         img.style.gridRow = row;
         img.style.rotate = `${rot % 360}deg`;
+        img.dataset.pos = pos;
         where.set(tile, pos);
       }
       if (animate && !reduceMotion()) {

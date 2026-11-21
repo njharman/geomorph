@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MOVES, POSITIONS, affected, applyMove, decode, encode, inverse, newCube, scramble } from '../cube/cube.js';
+import { MOVES, POSITIONS, affected, applyMove, decode, encode, inverse, newCube, rotateTile, scramble } from '../cube/cube.js';
 import { turnLayer } from './oracle.js';
 
 // Layer each move turns (face number) and its sense about that face's normal.
@@ -97,4 +97,17 @@ test('decode rejects malformed input', () => {
   for (const bad of [null, '', 'x', good.slice(1), good + '0', '2' + good.slice(1), dupe, good.slice(0, -1) + '9']) {
     assert.equal(decode(bad), null, String(bad));
   }
+});
+
+test('rotateTile turns only that tile 90 degrees clockwise, without mutating', () => {
+  const s = newCube();
+  const t = rotateTile(s, '3c');
+  assert.equal(t['3c'].rot, 90);
+  assert.equal(t['3c'].tile, s['3c'].tile);
+  assert.equal(s['3c'].rot, 0);
+  for (const p of POSITIONS) if (p !== '3c') assert.deepEqual(t[p], s[p]);
+  let u = t;
+  for (let i = 0; i < 3; i++) u = rotateTile(u, '3c');
+  assert.deepEqual(decode(encode(u)), decode(encode(s)));
+  assert.throws(() => rotateTile(s, '9z'));
 });

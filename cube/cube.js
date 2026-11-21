@@ -61,6 +61,12 @@ export function applyMove(state, move) {
   return next;
 }
 
+/** Turn the single tile at `pos` a quarter turn clockwise. Returns a new state. */
+export function rotateTile(state, pos) {
+  if (!state[pos]) throw new Error(`unknown position: ${pos}`);
+  return { ...state, [pos]: { tile: state[pos].tile, rot: state[pos].rot + 90 } };
+}
+
 /** The 12 positions a move changes (its destinations). */
 export const affected = (move) => {
   const steps = MOVE_DATA[move];

@@ -125,7 +125,10 @@ main { display: flex; justify-content: center; }
   outline-offset: -1px;
   user-select: none;
 }
+#map .geomorph:not(.blank) { cursor: pointer; }
 .geomorph.blank { background: repeating-linear-gradient(45deg, #fff 0 8px, #f1ece0 8px 16px); }
+/* Same outline for a turn button's tiles and for the single tile under the pointer. */
+#map .geomorph:not(.blank):hover,
 .geomorph.hl { outline: 4px solid var(--accent); outline-offset: -4px; position: relative; z-index: 1; }
 
 /* Face borders and (optional) face numbers sit above the tiles but never catch the pointer. */
